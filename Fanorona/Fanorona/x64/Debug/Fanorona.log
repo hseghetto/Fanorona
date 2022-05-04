@@ -1,0 +1,12 @@
+﻿  Fanorona.cpp
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(68,19): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(68,16): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(72,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(71,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(103,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(104,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(110,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(111,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+  Piece.cpp
+  Gerando Código...
+  Fanorona.vcxproj -> C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\x64\Debug\Fanorona.exe
