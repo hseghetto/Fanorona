@@ -218,36 +218,66 @@ void percorre_campo() {
     }
 }
 
-int x_s = -1, y_s = -1;
+int x_s = -1, y_s = -1, player = 1;
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_DOWN) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
-            int er_x, er_y, error, p;
+            int er_x, er_y, error;
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 5; j++) {
                     er_x = abs(100 + 50 * i - x);
                     er_y = abs(100 + 50 * j - y);
                     error = er_x * er_x + er_y * er_y;
 
-                    if (error < 49) {
+                    if (error < 49) { //lógica das jogadas
                         cout << i << "x" << j << "\n";
-                        int k = checa_movimento(i, j, BOARD[i][j]);
-                        if (k <= 0)
-                            cout << "nao" << "\n";
-                        return;
+                        int p = BOARD[i][j];
+                        int k = checa_movimento(i, j, p);
 
-                        if (x_s >= 0) {
-                            p = BOARD[x_s][y_s];
-                            BOARD[x_s][y_s] = BOARD[i][j];
-                            BOARD[i][j] = p;
+                        if (x_s < 0) { //seleção de peça inicial
+                            if (player != p || k == 0) { //retorna caso uma peça invalida seja selecionada
+                                cout << "nao \n";
+                                return;
+                            }
+
+                            x_s = i; //salva i e j caso a peça seja valida
+                            y_s = j;
+                        }
+                        else { //movimento da peça selecionada
+                            int dx = i - x_s;
+                            int dy = j - y_s;
+                            if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido
+                                cout << "nao \n";
+                                return;
+                            }
+
+                            BOARD[i][j] = BOARD[x_s][y_s]; // trocando a peça de lugar
+                            BOARD[x_s][y_s] = 0; // utilizar nullpointer no futuro
+
+                            int flag = 1; // 1=houve captura, 0=não houve captura
+                            while (flag > 0) { //laço de captura
+                                i = i + dx;
+                                j = j + dy;
+                                if (BOARD[i][j] == -player) {
+                                    BOARD[i][j] = 0;
+                                    flag++;
+                                }
+                                else {
+                                    flag = -flag;
+                                }
+                            }
+
+                            if (flag < -1) { //Flag <-1, houve captura
+                                x_s = x_s + dx;
+                                y_s = y_s + dy;
+                                if (checa_movimento(x_s, y_s, player) > 1) { //existe captura em sequencia
+                                    return;
+                                }
+                            }
+                            player = -player;
                             x_s = -1;
                             y_s = -1;
-                            cout << BOARD[0][0];
-                        }
-                        else {
-                            x_s = i;
-                            y_s = j;
                         }
                         return;
                     }
