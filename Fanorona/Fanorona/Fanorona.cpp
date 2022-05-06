@@ -1,4 +1,4 @@
-// Fanorona.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
+// ConsoleApplication2.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
 //
 
 #include <iostream>
@@ -10,6 +10,8 @@ using namespace std;
 int BOARD[9][5]{};
 
 list<Piece> WHITES, BLACKS, MOVE, CAPTURE;
+
+int _x_s = -1, _y_s = -1, _player = 1;
 
 void init_board() {
     WHITES.clear();
@@ -76,11 +78,24 @@ void draw_circle(double x, double y, double r) {
 }
 
 void display_piece(int x, int y, int p) {
+    int i = (x - 100) / 50;
+    int j = (y - 100) / 50;
+    int r = 5;
+
     if (p == 0) {
+        if (abs(i - _x_s) <= 1 && abs(j - _y_s) <= 1 && _x_s >= 0) {
+            if ((_x_s + _y_s) % 2 == 0 || abs(i - _x_s) + abs(j - _y_s) == 1) {
+                glColor3f(1, 0.75, 0);
+                draw_circle(x, y, r);
+            }
+        }
         return;
     }
 
-    int r = 5;
+    if (i == _x_s && j == _y_s) {
+        glColor3f(0, 0.5, 1);
+        draw_circle(x, y, r + 2);
+    }
 
     if (p == -1) {
         glColor3f(0, 0, 0);
@@ -218,7 +233,6 @@ void percorre_campo() {
     }
 }
 
-int x_s = -1, y_s = -1, player = 1;
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_DOWN) {
@@ -235,31 +249,34 @@ void botao_mouse(int button, int state, int x, int y) {
                         int p = BOARD[i][j];
                         int k = checa_movimento(i, j, p);
 
-                        if (x_s < 0) { //seleção de peça inicial
-                            if (player != p || k == 0) { //retorna caso uma peça invalida seja selecionada
-                                cout << "nao \n";
-                                return;
-                            }
-
-                            x_s = i; //salva i e j caso a peça seja valida
-                            y_s = j;
+                        if (_player == p && k != 0) {
+                            _x_s = i; //salva i e j caso a peça seja valida
+                            _y_s = j;
+                            return;
                         }
-                        else { //movimento da peça selecionada
-                            int dx = i - x_s;
-                            int dy = j - y_s;
+
+                        if (_x_s >= 0) { //movimento da peça selecionada
+                            int dx = i - _x_s;
+                            int dy = j - _y_s;
+
                             if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido
                                 cout << "nao \n";
                                 return;
                             }
+                            if ((i + j) % 2 == 1 && abs(dx) + abs(dy) == 2) { //verificando se movimento é valido
+                                cout << "nao \n";
+                                return;
+                            }
 
-                            BOARD[i][j] = BOARD[x_s][y_s]; // trocando a peça de lugar
-                            BOARD[x_s][y_s] = 0; // utilizar nullpointer no futuro
+                            BOARD[i][j] = BOARD[_x_s][_y_s]; // trocando a peça de lugar
+                            BOARD[_x_s][_y_s] = 0; // utilizar nullpointer no futuro
 
                             int flag = 1; // 1=houve captura, 0=não houve captura
                             while (flag > 0) { //laço de captura
                                 i = i + dx;
                                 j = j + dy;
-                                if (BOARD[i][j] == -player) {
+                                if (BOARD[i][j] == -_player && i >= 0 && j >= 0) {
+                                    cout << i << " " << j << " " << dx << " " << dy << " " << endl;
                                     BOARD[i][j] = 0;
                                     flag++;
                                 }
@@ -269,15 +286,15 @@ void botao_mouse(int button, int state, int x, int y) {
                             }
 
                             if (flag < -1) { //Flag <-1, houve captura
-                                x_s = x_s + dx;
-                                y_s = y_s + dy;
-                                if (checa_movimento(x_s, y_s, player) > 1) { //existe captura em sequencia
+                                _x_s = _x_s + dx;
+                                _y_s = _y_s + dy;
+                                if (checa_movimento(_x_s, _y_s, _player) > 1) { //existe captura em sequencia
                                     return;
                                 }
                             }
-                            player = -player;
-                            x_s = -1;
-                            y_s = -1;
+                            _player = -_player;
+                            _x_s = -1;
+                            _y_s = -1;
                         }
                         return;
                     }
