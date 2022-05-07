@@ -1,6 +1,3 @@
-// ConsoleApplication2.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
-//
-
 #include <iostream>
 #include <gl/glut.h>
 #include <list>
@@ -82,7 +79,7 @@ void display_piece(int x, int y, int p) {
     int j = (y - 100) / 50;
     int r = 5;
 
-    if (p == 0) {
+    if (p == 0) { //jogadas possiveis
         if (abs(i - _x_s) <= 1 && abs(j - _y_s) <= 1 && _x_s >= 0) {
             if ((_x_s + _y_s) % 2 == 0 || abs(i - _x_s) + abs(j - _y_s) == 1) {
                 glColor3f(1, 0.75, 0);
@@ -92,7 +89,7 @@ void display_piece(int x, int y, int p) {
         return;
     }
 
-    if (i == _x_s && j == _y_s) {
+    if (i == _x_s && j == _y_s) { //peça selecionada
         glColor3f(0, 0.5, 1);
         draw_circle(x, y, r + 2);
     }
@@ -184,8 +181,8 @@ int checa_movimento(int x, int y, int p) {
 
     int i, j;
     for (int k = 1; k <= 4; k++) {
-        i = k % 3 - 1;
-        j = k / 2 - 1;
+        i = k % 3 - 1; //  0  1 -1  0
+        j = k / 2 - 1; // -1  0  0  1
 
         if (checa(x + i, y + j)) {
             if (BOARD[x + i][y + j] == 0) {
@@ -204,8 +201,8 @@ int checa_movimento(int x, int y, int p) {
 
     if ((x + y) % 2 == 0)
         for (int k = 0; k < 4; k++) {
-            i = 1 - k / 2 * 2;
-            j = 1 - k % 2 * 2;
+            i = 1 - k / 2 * 2; // 1  1 -1 -1
+            j = 1 - k % 2 * 2; // 1 -1  1 -1
 
             if (checa(x + i, y + j)) {
                 if (BOARD[x + i][y + j] == 0) {
@@ -237,68 +234,103 @@ void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_DOWN) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
-            int er_x, er_y, error;
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 5; j++) {
-                    er_x = abs(100 + 50 * i - x);
-                    er_y = abs(100 + 50 * j - y);
-                    error = er_x * er_x + er_y * er_y;
+            double er_x, er_y, error;
 
-                    if (error < 49) { //lógica das jogadas
-                        cout << i << "x" << j << "\n";
-                        int p = BOARD[i][j];
-                        int k = checa_movimento(i, j, p);
+            double di = x;
+            double dj = y;
 
-                        if (_player == p && k != 0) {
-                            _x_s = i; //salva i e j caso a peça seja valida
-                            _y_s = j;
-                            return;
-                        }
+            di = (di - 100) / 50;
+            dj = (dj - 100) / 50;
 
-                        if (_x_s >= 0) { //movimento da peça selecionada
-                            int dx = i - _x_s;
-                            int dy = j - _y_s;
+            int i = round(di);
+            int j = round(dj);
 
-                            if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido
-                                cout << "nao \n";
-                                return;
-                            }
-                            if ((i + j) % 2 == 1 && abs(dx) + abs(dy) == 2) { //verificando se movimento é valido
-                                cout << "nao \n";
-                                return;
-                            }
+            er_x = abs(i - di);
+            er_y = abs(j - dj);
+            error = er_x * er_x + er_y * er_y;
 
-                            BOARD[i][j] = BOARD[_x_s][_y_s]; // trocando a peça de lugar
-                            BOARD[_x_s][_y_s] = 0; // utilizar nullpointer no futuro
+            if (error < 0.02) { //lógica das jogadas
+                cout << i << "x" << j << "\n";
+                int p = BOARD[i][j];
+                int k = checa_movimento(i, j, p);
 
-                            int flag = 1; // 1=houve captura, 0=não houve captura
-                            while (flag > 0) { //laço de captura
-                                i = i + dx;
-                                j = j + dy;
-                                if (BOARD[i][j] == -_player && i >= 0 && j >= 0) {
-                                    cout << i << " " << j << " " << dx << " " << dy << " " << endl;
-                                    BOARD[i][j] = 0;
-                                    flag++;
-                                }
-                                else {
-                                    flag = -flag;
-                                }
-                            }
+                if (_player == p && k != 0) {
+                    _x_s = i; //salva i e j caso a peça seja valida
+                    _y_s = j;
+                    return;
+                }
 
-                            if (flag < -1) { //Flag <-1, houve captura
-                                _x_s = _x_s + dx;
-                                _y_s = _y_s + dy;
-                                if (checa_movimento(_x_s, _y_s, _player) > 1) { //existe captura em sequencia
-                                    return;
-                                }
-                            }
-                            _player = -_player;
-                            _x_s = -1;
-                            _y_s = -1;
-                        }
+                if (_x_s >= 0) { //movimento da peça selecionada
+                    int dx = i - _x_s;
+                    int dy = j - _y_s;
+
+                    if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido - posicao vazia e proxima
+                        cout << "nao \n";
                         return;
                     }
+                    if ((i + j) % 2 == 1 && abs(dx) + abs(dy) == 2) { //verificando se movimento é valido - movimento diagonal
+                        cout << "nao \n";
+                        return;
+                    }
+
+                    BOARD[i][j] = BOARD[_x_s][_y_s]; // trocando a peça de lugar
+                    BOARD[_x_s][_y_s] = 0; // trocando a peça de lugar
+
+
+                    int flag = 0; // 1=houve captura, 0=não houve captura
+                    while (flag >= 0) { //laço de captura em avanço
+                        i = i + dx;
+                        j = j + dy;
+
+                        if (checa(i, j)) {
+                            if (BOARD[i][j] == -_player) {
+                                cout << i << " " << j << " " << dx << " " << dy << " " << endl;
+                                BOARD[i][j] = 0;
+                                flag++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
+
+                    i = _x_s;
+                    j = _y_s;
+                    int flag2 = 0; // 1=houve captura, 0=não houve captura
+                    while (flag2 >= 0) { //laço de captura em recuo
+                        i = i - dx;
+                        j = j - dy;
+
+                        if (checa(i, j)) {
+                            if (BOARD[i][j] == -_player) {
+                                cout << i << " " << j << " " << dx << " " << dy << " " << endl;
+                                BOARD[i][j] = 0;
+                                flag2++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
+
+                    if ((flag + flag2) > 0) { //Flag > 0, houve captura
+                        _x_s = _x_s + dx;
+                        _y_s = _y_s + dy;
+                        if (checa_movimento(_x_s, _y_s, _player) > 1) { //existe captura em sequencia
+                            return;
+                        }
+                    }
+                    _player = -_player;
+                    _x_s = -1;
+                    _y_s = -1;
                 }
+                return;
             }
         }
     }
@@ -325,14 +357,3 @@ int main(int argc, char** argv)
     glutMouseFunc(botao_mouse);
     glutMainLoop();
 }
-
-// Executar programa: Ctrl + F5 ou Menu Depurar > Iniciar Sem Depuração
-// Depurar programa: F5 ou menu Depurar > Iniciar Depuração
-
-// Dicas para Começar: 
-//   1. Use a janela do Gerenciador de Soluções para adicionar/gerenciar arquivos
-//   2. Use a janela do Team Explorer para conectar-se ao controle do código-fonte
-//   3. Use a janela de Saída para ver mensagens de saída do build e outras mensagens
-//   4. Use a janela Lista de Erros para exibir erros
-//   5. Ir Para o Projeto > Adicionar Novo Item para criar novos arquivos de código, ou Projeto > Adicionar Item Existente para adicionar arquivos de código existentes ao projeto
-//   6. No futuro, para abrir este projeto novamente, vá para Arquivo > Abrir > Projeto e selecione o arquivo. sln
