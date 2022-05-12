@@ -1,14 +1,21 @@
 ﻿  Fanorona.cpp
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(69,19): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(69,16): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(73,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(72,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(127,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(128,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(134,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(135,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(393,23): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(393,39): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(440,19): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
-C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(441,19): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(76,19): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(76,16): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(80,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(79,15): warning C4244: 'argumento': conversão de 'double' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(134,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(135,24): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(141,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(142,29): warning C4244: 'argumento': conversão de 'int' para 'GLfloat', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(392,23): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(392,39): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(440,22): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(441,22): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(446,25): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(453,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(454,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(482,56): warning C4244: 'argumento': conversão de 'float' para 'GLsizei', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(482,40): warning C4244: 'argumento': conversão de 'float' para 'GLsizei', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(482,25): warning C4244: 'argumento': conversão de 'float' para 'GLint', possível perda de dados
+C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\Fanorona\Fanorona.cpp(482,16): warning C4244: 'argumento': conversão de 'float' para 'GLint', possível perda de dados
   Fanorona.vcxproj -> C:\Users\Humberto\Documents\GitHub\Fanorona\Fanorona\x64\Debug\Fanorona.exe

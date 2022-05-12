@@ -12,6 +12,13 @@ list<Piece> WHITES, BLACKS, MOVE, CAPTURE;
 int _x_s = -1, _y_s = -1, _player = 1, _pc = -1, _captura = -1;
 int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 
+// initial window screen size
+int WIDTH = 800;
+int HEIGHT = 800;
+
+float XMARGIN = 0;
+float YMARGIN = 0;
+
 void init_board() {
     WHITES.clear();
     BLACKS.clear();
@@ -234,14 +241,6 @@ int checa_movimento(int x, int y, int p) {
     return c * 10 + m;
 }
 
-void percorre_campo() {
-    for (int i = 0; i <= 8; i++) {
-        for (int j = 0; j <= 4; j++) {
-            cout << i << "x" << j << ":" << checa_movimento(i, j, BOARD[i][j]) << "\n";
-        }
-    }
-}
-
 void movimenta(int i, int j) {
     int p = BOARD[i][j];
     int k = checa_movimento(i, j, p);
@@ -371,19 +370,19 @@ void movimenta(int i, int j) {
     return;
 }
 
-void movimento_aleatorio() {
+void movimento_aleatorio() { //movimento p computador
     int c = 0;
     list<int> cx,cy,mx,my;
 
-    for (int i = 0; i <= 8; i++) {
+    for (int i = 0; i <= 8; i++) { 
         for (int j = 0; j <= 4; j++) {
             c = checa_movimento(i, j, BOARD[i][j]);
 
-            if (c == 1) {
+            if (c == 1) { //listando peças com captura
                 mx.push_back(i);
                 my.push_back(j);
             }
-            if (c > 1) {
+            if (c > 1) { //listando peças com movimento
                 cx.push_back(i);
                 cy.push_back(j);
             }
@@ -392,7 +391,7 @@ void movimento_aleatorio() {
 
     int cs = cx.size(), ms = mx.size(), r;
 
-    if (cs) {
+    if (cs) { //tenta capturar
         r = rand() % cs;
 
         auto cx_front = cx.begin();
@@ -402,10 +401,13 @@ void movimento_aleatorio() {
         advance(cy_front, r);
 
         movimenta(*cx_front, *cy_front);
-        
+        //*cx_front posicao x, * cy_front posicao y
+        //escolhe o movimento
+        //movimenta(x, y);
 
+        return;
     }
-    if (ms) {
+    if (ms) { //tenta mover
         r = rand() % ms;
 
         auto mx_front = mx.begin();
@@ -416,11 +418,15 @@ void movimento_aleatorio() {
 
         movimenta(*mx_front, *my_front);
 
+        return;
     }
 }
 
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
+
+        cout << XMARGIN << " " << WIDTH << endl;
+        cout << YMARGIN << " " << HEIGHT << endl;
 
         if (_player == _pc) {
             movimento_aleatorio();
@@ -429,16 +435,28 @@ void botao_mouse(int button, int state, int x, int y) {
 
         if (state == GLUT_DOWN) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
-            double er_x, er_y, error;
+            float er_x, er_y, error;
 
-            double di = x;
-            double dj = y;
+            float di = (float) x - XMARGIN * 3.0 / 4.0 + YMARGIN * 1.0 / 4.0;
+            float dj = (float) y - YMARGIN * 3.0 / 4.0 + XMARGIN * 1.0 / 4.0;
 
-            di = (di - 100) / 50;
-            dj = (dj - 100) / 50;
+            cout << "" << di << "," << dj << "\n";
+
+            float scale = min((float)glutGet(GLUT_WINDOW_WIDTH) / WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT) / HEIGHT);
+            float delta = 50.0 * scale;
+
+            di = (di - 100) / delta;
+            dj = (dj - 100) / delta;
+
+            cout << "" << di << "," << dj << "; " << delta << "\n";
 
             int i = round(di);
             int j = round(dj);
+
+            if (!checa(i, j)) {
+                cout << "out of bounds \n";
+                return;
+            }
 
             er_x = abs(i - di);
             er_y = abs(j - dj);
@@ -450,6 +468,22 @@ void botao_mouse(int button, int state, int x, int y) {
             }
         }
     }
+}
+
+// reshape function, call with glutReshapeFunc(reshape) in yout main function
+void reshape(int width, int height) {
+    float scale = min((float)glutGet(GLUT_WINDOW_WIDTH)/WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT)/HEIGHT);
+
+    cout << scale << endl;
+
+    XMARGIN = (width - WIDTH * scale) / 2;
+    YMARGIN = (height - HEIGHT * scale) / 2;
+
+    glViewport(XMARGIN, YMARGIN, WIDTH * scale, HEIGHT * scale);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glLoadIdentity();
 }
 
 int main(int argc, char** argv)
@@ -465,10 +499,11 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800, 800);
-    glutInitWindowPosition(0, 0);
+    glutInitWindowPosition(0, -200);
 
-    glutCreateWindow("Ponto");
+    glutCreateWindow("Fanorona");
     init();
+    glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutMouseFunc(botao_mouse);
     glutMainLoop();
