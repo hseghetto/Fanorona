@@ -7,7 +7,7 @@ using namespace std;
 
 int BOARD[9][5]{};
 
-int _x_s = -1, _y_s = -1, _player = 1, _pc = -1, _captura = -1;
+int _x_s = -1, _y_s = -1, _player = 1, _pc = 1, _captura = -1;
 int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 
 // initial window screen size
@@ -183,19 +183,19 @@ int checa_movimento(int x, int y, int p) {
     }
 
     int i, j;
-    for (int k = 1; k <= 4; k++) {
-        i = k % 3 - 1; //  0  1 -1  0
+    for (int k = 1; k <= 4; k++) { // forma cruzes
+        i = k % 3 - 1; //  0  1 -1  0 
         j = k / 2 - 1; // -1  0  0  1
 
         if (checa(x + i, y + j)) {
-            if (BOARD[x + i][y + j] == 0) {
+            if (BOARD[x + i][y + j] == 0) { // movimenta
                 m = 1;
 
-                if (checa(x + i * 2, y + j * 2))
+                if (checa(x + i * 2, y + j * 2)) // captura
                     if (BOARD[x + i * 2][y + j * 2] == -p)
                         c = 1;
 
-                if (checa(x - i, y - j))
+                if (checa(x - i, y - j)) // captura
                     if (BOARD[x - i][y - j] == -p)
                         c = 1;
             }
@@ -203,19 +203,19 @@ int checa_movimento(int x, int y, int p) {
     }
 
     if ((x + y) % 2 == 0)
-        for (int k = 0; k < 4; k++) {
+        for (int k = 0; k < 4; k++) { // diagonais
             i = 1 - k / 2 * 2; // 1  1 -1 -1
             j = 1 - k % 2 * 2; // 1 -1  1 -1
 
             if (checa(x + i, y + j)) {
-                if (BOARD[x + i][y + j] == 0) {
+                if (BOARD[x + i][y + j] == 0) { // movimento
                     m = 1;
 
-                    if (checa(x + i * 2, y + j * 2))
+                    if (checa(x + i * 2, y + j * 2)) // captura
                         if (BOARD[x + i * 2][y + j * 2] == -p)
                             c = 1;
 
-                    if (checa(x - i, y - j))
+                    if (checa(x - i, y - j)) // captura
                         if (BOARD[x - i][y - j] == -p)
                             c = 1;
                 }
@@ -224,7 +224,6 @@ int checa_movimento(int x, int y, int p) {
 
     return c * 10 + m;
 }
-
 void movimenta(int i, int j) {
     int p = BOARD[i][j];
     int k = checa_movimento(i, j, p);
@@ -281,7 +280,7 @@ void movimenta(int i, int j) {
         if (checa(i + dx, j + dy) && checa(i - 2 * dx, j - 2 * dy) && _captura != 2) {
             cout << BOARD[i + dx][j + dy] << " " << BOARD[i - 2 * dx][j - 2 * dy] << " " << _player;
             cout << "chacando captura dupla \n";
-            
+
             if (BOARD[i + dx][j + dy] == BOARD[i - 2 * dx][j - 2 * dy] && _player == -BOARD[i + dx][j + dy]) {
                 _captura = 2;
                 _cx1 = i + dx;
@@ -354,11 +353,48 @@ void movimenta(int i, int j) {
     return;
 }
 
+
+
+int* escolhe_movimento(int x, int y) {
+    int xmov = 0;
+    int ymov = 0;
+    int i, j;
+    int v[2];
+    for (int k = 1; k <= 4; k++) { // forma cruzes
+        i = k % 3 - 1; //  0  1 -1  0 
+        j = k / 2 - 1; // -1  0  0  1
+        if (checa(x + i, y + j)) {
+            if (BOARD[x + i][y + j] == 0) { // movimenta
+                xmov = x + i;
+                ymov = y + i;
+                break;
+            }
+        }
+    }
+
+    if ((x + y) % 2 == 0)
+        for (int k = 0; k < 4; k++) { // diagonais
+            i = 1 - k / 2 * 2; // 1  1 -1 -1
+            j = 1 - k % 2 * 2; // 1 -1  1 -1
+
+            if (checa(x + i, y + j)) {
+                if (BOARD[x + i][y + j] == 0) { // movimento
+                    xmov = x + i;
+                    ymov = y + i;
+                    break;
+                }
+            }
+        }
+    v[0] = xmov;
+    v[1] = ymov;
+    return v;
+}
+
 void movimento_aleatorio() { //movimento p computador
     int c = 0;
-    list<int> cx,cy,mx,my;
+    list<int> cx, cy, mx, my;
 
-    for (int i = 0; i <= 8; i++) { 
+    for (int i = 0; i <= 8; i++) {
         for (int j = 0; j <= 4; j++) {
             c = checa_movimento(i, j, BOARD[i][j]);
 
@@ -384,11 +420,15 @@ void movimento_aleatorio() { //movimento p computador
         auto cy_front = cy.begin();
         advance(cy_front, r);
 
-        movimenta(*cx_front, *cy_front);
+        int* v = escolhe_movimento(*cx_front, *cy_front);
+        BOARD[v[0]][v[1]] = BOARD[*cx_front][*cy_front]; // trocando a peça de lugar
+        BOARD[*cx_front][*cy_front] = 0; // trocando a peça de lugar
+        //*cx_front posicao x, * cy_front posicao y
+        //escolhe o movimento
         //*cx_front posicao x, * cy_front posicao y
         //escolhe o movimento
         //movimenta(x, y);
-
+        _player = 1; // muda jogador p nao pc
         return;
     }
     if (ms) { //tenta mover
@@ -400,13 +440,22 @@ void movimento_aleatorio() { //movimento p computador
         auto my_front = my.begin();
         advance(my_front, r);
 
-        movimenta(*mx_front, *my_front);
+        int *v = escolhe_movimento(*mx_front, *my_front);
+        BOARD[v[0]][v[1]] = BOARD[*mx_front][*my_front]; // trocando a peça de lugar
+        BOARD[*mx_front][*my_front] = 0; // trocando a peça de lugar
+        _player = 1;
         //*cx_front posicao x, * cy_front posicao y
         //escolhe o movimento
         //movimenta(x, y);
         return;
     }
 }
+
+
+void movimenta_automatico(int i, int j) {
+    return;
+}
+
 
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
@@ -444,7 +493,7 @@ void botao_mouse(int button, int state, int x, int y) {
             er_y = abs(j - dj);
             error = er_x * er_x + er_y * er_y;
 
-            if (error < 0.02) { 
+            if (error < 0.02) {
                 cout << i << "x" << j << "\n";
                 movimenta(i, j);
             }
@@ -453,7 +502,7 @@ void botao_mouse(int button, int state, int x, int y) {
 }
 
 void reshape(int width, int height) {
-    float scale = min((float)glutGet(GLUT_WINDOW_WIDTH)/WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT)/HEIGHT);
+    float scale = min((float)glutGet(GLUT_WINDOW_WIDTH) / WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT) / HEIGHT);
 
     cout << scale << endl;
 
