@@ -451,6 +451,35 @@ void botao_mouse(int button, int state, int x, int y) {
         }
     }
 }
+// initial window screen size
+int WIDTH = 600;
+int HEIGHT = 600;
+
+// reshape function, call with glutReshapeFunc(reshape) in yout main function
+void reshape(int width, int height) {
+    const float ar_origin = (float)WIDTH / (float)HEIGHT;
+    const float ar_new = (float)width / (float)height;
+
+    float scale_w = (float)width / (float)WIDTH;
+    float scale_h = (float)height / (float)HEIGHT;
+    if (ar_new > ar_origin) {
+        scale_w = scale_h;
+    }
+    else {
+        scale_h = scale_w;
+    }
+
+    float margin_x = (width - WIDTH * scale_w) / 2;
+    float margin_y = (height - HEIGHT * scale_h) / 2;
+
+    glViewport(margin_x, margin_y, WIDTH * scale_w, HEIGHT * scale_h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, WIDTH / ar_origin, 0, HEIGHT / ar_origin, 0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
 
 int main(int argc, char** argv)
 {
@@ -465,10 +494,11 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800, 800);
-    glutInitWindowPosition(0, 0);
+    glutInitWindowPosition(0, -200);
 
     glutCreateWindow("Ponto");
     init();
+    glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutMouseFunc(botao_mouse);
     glutMainLoop();
