@@ -12,6 +12,13 @@ list<Piece> WHITES, BLACKS, MOVE, CAPTURE;
 int _x_s = -1, _y_s = -1, _player = 1, _pc = -1, _captura = -1;
 int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 
+// initial window screen size
+int WIDTH = 800;
+int HEIGHT = 800;
+
+float XMARGIN = 0;
+float YMARGIN = 0;
+
 void init_board() {
     WHITES.clear();
     BLACKS.clear();
@@ -422,6 +429,9 @@ void movimento_aleatorio() {
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
 
+        cout << XMARGIN << " " << WIDTH << endl;
+        cout << YMARGIN << " " << HEIGHT << endl;
+
         if (_player == _pc) {
             movimento_aleatorio();
             return;
@@ -429,16 +439,28 @@ void botao_mouse(int button, int state, int x, int y) {
 
         if (state == GLUT_DOWN) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
-            double er_x, er_y, error;
+            float er_x, er_y, error;
 
-            double di = x;
-            double dj = y;
+            float di = (float) x - XMARGIN * 3.0 / 4.0 + YMARGIN * 1.0 / 4.0;
+            float dj = (float) y - YMARGIN * 3.0 / 4.0 + XMARGIN * 1.0 / 4.0;
 
-            di = (di - 100) / 50;
-            dj = (dj - 100) / 50;
+            cout << "" << di << "," << dj << "\n";
+
+            //float delta = min(50.0, min((WIDTH-XMARGIN)/16.0,(HEIGHT-YMARGIN)/16.0));
+            float delta = 50;
+
+            di = (di - 100) / delta;
+            dj = (dj - 100) / delta;
+
+            cout << "" << di << "," << dj << "; " << delta << "\n";
 
             int i = round(di);
             int j = round(dj);
+
+            if (!checa(i, j)) {
+                cout << "out of bounds \n";
+                return;
+            }
 
             er_x = abs(i - di);
             er_y = abs(j - dj);
@@ -451,9 +473,8 @@ void botao_mouse(int button, int state, int x, int y) {
         }
     }
 }
-// initial window screen size
-int WIDTH = 600;
-int HEIGHT = 600;
+
+
 
 // reshape function, call with glutReshapeFunc(reshape) in yout main function
 void reshape(int width, int height) {
@@ -469,13 +490,15 @@ void reshape(int width, int height) {
         scale_h = scale_w;
     }
 
-    float margin_x = (width - WIDTH * scale_w) / 2;
-    float margin_y = (height - HEIGHT * scale_h) / 2;
 
-    glViewport(margin_x, margin_y, WIDTH * scale_w, HEIGHT * scale_h);
+    XMARGIN = (width - WIDTH * scale_w) / 2;
+    YMARGIN = (height - HEIGHT * scale_h) / 2;
+
+    glViewport(XMARGIN, YMARGIN, WIDTH * scale_w, HEIGHT * scale_h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, WIDTH / ar_origin, 0, HEIGHT / ar_origin, 0, 1.0);
+    glOrtho(0, WIDTH / ar_origin, HEIGHT / ar_origin, 0, 0, 1.0);
+    //glOrtho(XMARGIN, WIDTH * scale_w, HEIGHT * scale_h, YMARGIN, 0,1);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
