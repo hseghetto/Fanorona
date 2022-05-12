@@ -1,5 +1,6 @@
 #include <iostream>
 #include <gl/glut.h>
+#include <stdlib.h>
 #include <list>
 #include "Piece.h"
 using namespace std;
@@ -8,7 +9,8 @@ int BOARD[9][5]{};
 
 list<Piece> WHITES, BLACKS, MOVE, CAPTURE;
 
-int _x_s = -1, _y_s = -1, _player = 1;
+int _x_s = -1, _y_s = -1, _player = 1, _pc = -1, _captura = -1;
+int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 
 void init_board() {
     WHITES.clear();
@@ -91,6 +93,16 @@ void display_piece(int x, int y, int p) {
 
     if (i == _x_s && j == _y_s) { //peça selecionada
         glColor3f(0, 0.5, 1);
+        draw_circle(x, y, r + 2);
+    }
+
+    if (i == _cx1 && j == _cy1) { //captura ambigua
+        glColor3f(1, 0, 0);
+        draw_circle(x, y, r + 2);
+    }
+
+    if (i == _cx2 && j == _cy2) { //captura ambigua
+        glColor3f(1, 0, 0);
         draw_circle(x, y, r + 2);
     }
 
@@ -230,8 +242,191 @@ void percorre_campo() {
     }
 }
 
+void movimenta(int i, int j) {
+    int p = BOARD[i][j];
+    int k = checa_movimento(i, j, p);
+
+    if (_player == p && k != 0 && _captura == -1) {
+        _x_s = i; //salva i e j caso a peça seja valida
+        _y_s = j;
+        return;
+    }
+
+    int flag = 0, flag2 = 0;
+    if (_captura == 2) {
+        if (_cx1 == i && _cy1 == j) {
+            flag2 = -1;
+            i = (_cx1 + _x_s) / 2;
+            j = (_cy1 + _y_s) / 2;
+            p = 0;
+            _cx1 = -1;
+            _cy1 = -1;
+            _cx2 = -1;
+            _cy2 = -1;
+            cout << _x_s << " " << i << " " << _cx1 << " x's\n";
+        }
+        else if (_cx2 == i && _cy2 == j) {
+            flag = -1;
+            i = (_cx1 + _x_s) / 2;
+            j = (_cy1 + _y_s) / 2;
+            p = 0;
+            _cx1 = -1;
+            _cy1 = -1;
+            _cx2 = -1;
+            _cy2 = -1;
+            cout << _x_s << " " << i << " " << _cx1 << " x's\n";
+        }
+        else {
+            cout << "selecione uma captura \n";
+            return;
+        }
+    }
+
+    if (_x_s >= 0) { //movimento da peça selecionada
+        int dx = i - _x_s;
+        int dy = j - _y_s;
+
+        if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido - posicao vazia e proxima
+            cout << "nao \n";
+            return;
+        }
+        if ((i + j) % 2 == 1 && abs(dx) + abs(dy) == 2) { //verificando se movimento é valido - movimento diagonal
+            cout << "nao \n";
+            return;
+        }
+
+        if (checa(i + dx, j + dy) && checa(i - 2 * dx, j - 2 * dy) && _captura != 2) {
+            cout << BOARD[i + dx][j + dy] << " " << BOARD[i - 2 * dx][j - 2 * dy] << " " << _player;
+            cout << "chacando captura dupla \n";
+            
+            if (BOARD[i + dx][j + dy] == BOARD[i - 2 * dx][j - 2 * dy] && _player == -BOARD[i + dx][j + dy]) {
+                _captura = 2;
+                _cx1 = i + dx;
+                _cy1 = j + dy;
+                _cx2 = i - 2 * dx;
+                _cy2 = j - 2 * dy;
+                return;
+            }
+        }
+
+        BOARD[i][j] = BOARD[_x_s][_y_s]; // trocando a peça de lugar
+        BOARD[_x_s][_y_s] = 0; // trocando a peça de lugar
+
+        // 1=houve captura, 0=não houve captura
+        while (flag >= 0) { //laço de captura em avanço
+            i = i + dx;
+            j = j + dy;
+
+            if (checa(i, j)) {
+                if (BOARD[i][j] == -_player) {
+                    cout << i << " " << j << " " << dx << " " << dy << " " << endl;
+                    BOARD[i][j] = 0;
+                    flag++;
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        i = _x_s;
+        j = _y_s;
+        // 1=houve captura, 0=não houve captura
+        while (flag2 >= 0) { //laço de captura em recuo
+            i = i - dx;
+            j = j - dy;
+
+            if (checa(i, j)) {
+                if (BOARD[i][j] == -_player) {
+                    cout << i << " " << j << " " << dx << " " << dy << " " << endl;
+                    BOARD[i][j] = 0;
+                    flag2++;
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        if (flag > 0 || flag2 > 0) {//Flag > 0, houve captura
+            _x_s = _x_s + dx;
+            _y_s = _y_s + dy;
+            if (checa_movimento(_x_s, _y_s, _player) > 1) { //existe captura em sequencia
+                _captura = 1;
+                return;
+            }
+        }
+
+        _captura = -1;
+        _player = -_player;
+        _x_s = -1;
+        _y_s = -1;
+    }
+    return;
+}
+
+void movimento_aleatorio() {
+    int c = 0;
+    list<int> cx,cy,mx,my;
+
+    for (int i = 0; i <= 8; i++) {
+        for (int j = 0; j <= 4; j++) {
+            c = checa_movimento(i, j, BOARD[i][j]);
+
+            if (c == 1) {
+                mx.push_back(i);
+                my.push_back(j);
+            }
+            if (c > 1) {
+                cx.push_back(i);
+                cy.push_back(j);
+            }
+        }
+    }
+
+    int cs = cx.size(), ms = mx.size(), r;
+
+    if (cs) {
+        r = rand() % cs;
+
+        auto cx_front = cx.begin();
+        advance(cx_front, r);
+
+        auto cy_front = cy.begin();
+        advance(cy_front, r);
+
+        movimenta(*cx_front, *cy_front);
+        
+
+    }
+    if (ms) {
+        r = rand() % ms;
+
+        auto mx_front = mx.begin();
+        advance(mx_front, r);
+
+        auto my_front = my.begin();
+        advance(my_front, r);
+
+        movimenta(*mx_front, *my_front);
+
+    }
+}
+
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
+
+        if (_player == _pc) {
+            movimento_aleatorio();
+            return;
+        }
+
         if (state == GLUT_DOWN) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
             double er_x, er_y, error;
@@ -249,88 +444,9 @@ void botao_mouse(int button, int state, int x, int y) {
             er_y = abs(j - dj);
             error = er_x * er_x + er_y * er_y;
 
-            if (error < 0.02) { //lógica das jogadas
+            if (error < 0.02) { 
                 cout << i << "x" << j << "\n";
-                int p = BOARD[i][j];
-                int k = checa_movimento(i, j, p);
-
-                if (_player == p && k != 0) {
-                    _x_s = i; //salva i e j caso a peça seja valida
-                    _y_s = j;
-                    return;
-                }
-
-                if (_x_s >= 0) { //movimento da peça selecionada
-                    int dx = i - _x_s;
-                    int dy = j - _y_s;
-
-                    if (p != 0 || abs(dx) > 1 || abs(dy) > 1) { //verificando se movimento é valido - posicao vazia e proxima
-                        cout << "nao \n";
-                        return;
-                    }
-                    if ((i + j) % 2 == 1 && abs(dx) + abs(dy) == 2) { //verificando se movimento é valido - movimento diagonal
-                        cout << "nao \n";
-                        return;
-                    }
-
-                    BOARD[i][j] = BOARD[_x_s][_y_s]; // trocando a peça de lugar
-                    BOARD[_x_s][_y_s] = 0; // trocando a peça de lugar
-
-
-                    int flag = 0; // 1=houve captura, 0=não houve captura
-                    while (flag >= 0) { //laço de captura em avanço
-                        i = i + dx;
-                        j = j + dy;
-
-                        if (checa(i, j)) {
-                            if (BOARD[i][j] == -_player) {
-                                cout << i << " " << j << " " << dx << " " << dy << " " << endl;
-                                BOARD[i][j] = 0;
-                                flag++;
-                            }
-                            else {
-                                break;
-                            }
-                        }
-                        else {
-                            break;
-                        }
-                    }
-
-                    i = _x_s;
-                    j = _y_s;
-                    int flag2 = 0; // 1=houve captura, 0=não houve captura
-                    while (flag2 >= 0) { //laço de captura em recuo
-                        i = i - dx;
-                        j = j - dy;
-
-                        if (checa(i, j)) {
-                            if (BOARD[i][j] == -_player) {
-                                cout << i << " " << j << " " << dx << " " << dy << " " << endl;
-                                BOARD[i][j] = 0;
-                                flag2++;
-                            }
-                            else {
-                                break;
-                            }
-                        }
-                        else {
-                            break;
-                        }
-                    }
-
-                    if ((flag + flag2) > 0) { //Flag > 0, houve captura
-                        _x_s = _x_s + dx;
-                        _y_s = _y_s + dy;
-                        if (checa_movimento(_x_s, _y_s, _player) > 1) { //existe captura em sequencia
-                            return;
-                        }
-                    }
-                    _player = -_player;
-                    _x_s = -1;
-                    _y_s = -1;
-                }
-                return;
+                movimenta(i, j);
             }
         }
     }
