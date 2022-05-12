@@ -241,14 +241,6 @@ int checa_movimento(int x, int y, int p) {
     return c * 10 + m;
 }
 
-void percorre_campo() {
-    for (int i = 0; i <= 8; i++) {
-        for (int j = 0; j <= 4; j++) {
-            cout << i << "x" << j << ":" << checa_movimento(i, j, BOARD[i][j]) << "\n";
-        }
-    }
-}
-
 void movimenta(int i, int j) {
     int p = BOARD[i][j];
     int k = checa_movimento(i, j, p);
@@ -378,19 +370,19 @@ void movimenta(int i, int j) {
     return;
 }
 
-void movimento_aleatorio() {
+void movimento_aleatorio() { //movimento p computador
     int c = 0;
     list<int> cx,cy,mx,my;
 
-    for (int i = 0; i <= 8; i++) {
+    for (int i = 0; i <= 8; i++) { 
         for (int j = 0; j <= 4; j++) {
             c = checa_movimento(i, j, BOARD[i][j]);
 
-            if (c == 1) {
+            if (c == 1) { //listando peças com captura
                 mx.push_back(i);
                 my.push_back(j);
             }
-            if (c > 1) {
+            if (c > 1) { //listando peças com movimento
                 cx.push_back(i);
                 cy.push_back(j);
             }
@@ -399,7 +391,7 @@ void movimento_aleatorio() {
 
     int cs = cx.size(), ms = mx.size(), r;
 
-    if (cs) {
+    if (cs) { //tenta capturar
         r = rand() % cs;
 
         auto cx_front = cx.begin();
@@ -409,10 +401,13 @@ void movimento_aleatorio() {
         advance(cy_front, r);
 
         movimenta(*cx_front, *cy_front);
-        
+        //*cx_front posicao x, * cy_front posicao y
+        //escolhe o movimento
+        //movimenta(x, y);
 
+        return;
     }
-    if (ms) {
+    if (ms) { //tenta mover
         r = rand() % ms;
 
         auto mx_front = mx.begin();
@@ -423,6 +418,7 @@ void movimento_aleatorio() {
 
         movimenta(*mx_front, *my_front);
 
+        return;
     }
 }
 
@@ -446,8 +442,8 @@ void botao_mouse(int button, int state, int x, int y) {
 
             cout << "" << di << "," << dj << "\n";
 
-            //float delta = min(50.0, min((WIDTH-XMARGIN)/16.0,(HEIGHT-YMARGIN)/16.0));
-            float delta = 50;
+            float scale = min((float)glutGet(GLUT_WINDOW_WIDTH) / WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT) / HEIGHT);
+            float delta = 50.0 * scale;
 
             di = (di - 100) / delta;
             dj = (dj - 100) / delta;
@@ -474,33 +470,19 @@ void botao_mouse(int button, int state, int x, int y) {
     }
 }
 
-
-
 // reshape function, call with glutReshapeFunc(reshape) in yout main function
 void reshape(int width, int height) {
-    const float ar_origin = (float)WIDTH / (float)HEIGHT;
-    const float ar_new = (float)width / (float)height;
+    float scale = min((float)glutGet(GLUT_WINDOW_WIDTH)/WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT)/HEIGHT);
 
-    float scale_w = (float)width / (float)WIDTH;
-    float scale_h = (float)height / (float)HEIGHT;
-    if (ar_new > ar_origin) {
-        scale_w = scale_h;
-    }
-    else {
-        scale_h = scale_w;
-    }
+    cout << scale << endl;
 
+    XMARGIN = (width - WIDTH * scale) / 2;
+    YMARGIN = (height - HEIGHT * scale) / 2;
 
-    XMARGIN = (width - WIDTH * scale_w) / 2;
-    YMARGIN = (height - HEIGHT * scale_h) / 2;
-
-    glViewport(XMARGIN, YMARGIN, WIDTH * scale_w, HEIGHT * scale_h);
+    glViewport(XMARGIN, YMARGIN, WIDTH * scale, HEIGHT * scale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, WIDTH / ar_origin, HEIGHT / ar_origin, 0, 0, 1.0);
-    //glOrtho(XMARGIN, WIDTH * scale_w, HEIGHT * scale_h, YMARGIN, 0,1);
 
-    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
@@ -519,7 +501,7 @@ int main(int argc, char** argv)
     glutInitWindowSize(800, 800);
     glutInitWindowPosition(0, -200);
 
-    glutCreateWindow("Ponto");
+    glutCreateWindow("Fanorona");
     init();
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
