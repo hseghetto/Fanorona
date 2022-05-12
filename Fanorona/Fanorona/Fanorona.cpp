@@ -7,8 +7,6 @@ using namespace std;
 
 int BOARD[9][5]{};
 
-list<Piece> WHITES, BLACKS, MOVE, CAPTURE;
-
 int _x_s = -1, _y_s = -1, _player = 1, _pc = -1, _captura = -1;
 int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 
@@ -16,27 +14,17 @@ int _cx1 = -1, _cy1 = -1, _cx2 = -1, _cy2 = -1;
 int WIDTH = 800;
 int HEIGHT = 800;
 
-float XMARGIN = 0;
-float YMARGIN = 0;
-
 void init_board() {
-    WHITES.clear();
-    BLACKS.clear();
-
     int i, j;
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 2; j++) {
             BOARD[i][j] = -1;
-            Piece p(i, j, -1);
-            BLACKS.push_back(p);
         }
     }
 
     for (i = 0; i < 9; i++) {
         for (j = 3; j < 5; j++) {
             BOARD[i][j] = 1;
-            Piece p(i, j, 1);
-            WHITES.push_back(p);
         }
     }
 
@@ -45,15 +33,11 @@ void init_board() {
         if (i == 4)
             i++;
         BOARD[i][2] = -1;
-        Piece p(i, 2, -1);
-        BLACKS.push_back(p);
     }
     for (i = 1; i <= 8; i = i + 2) {
         if (i == 5)
             i++;
         BOARD[i][2] = 1;
-        Piece p(i, 2, 1);
-        WHITES.push_back(p);
     }
 
 
@@ -417,17 +401,15 @@ void movimento_aleatorio() { //movimento p computador
         advance(my_front, r);
 
         movimenta(*mx_front, *my_front);
-
+        //*cx_front posicao x, * cy_front posicao y
+        //escolhe o movimento
+        //movimenta(x, y);
         return;
     }
 }
 
 void botao_mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
-
-        cout << XMARGIN << " " << WIDTH << endl;
-        cout << YMARGIN << " " << HEIGHT << endl;
-
         if (_player == _pc) {
             movimento_aleatorio();
             return;
@@ -437,16 +419,16 @@ void botao_mouse(int button, int state, int x, int y) {
             cout << "Botao esquerdo " << x << "," << y << "\n";
             float er_x, er_y, error;
 
-            float di = (float) x - XMARGIN * 3.0 / 4.0 + YMARGIN * 1.0 / 4.0;
-            float dj = (float) y - YMARGIN * 3.0 / 4.0 + XMARGIN * 1.0 / 4.0;
+            float di = (float)x;
+            float dj = (float)y;
 
             cout << "" << di << "," << dj << "\n";
 
             float scale = min((float)glutGet(GLUT_WINDOW_WIDTH) / WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT) / HEIGHT);
             float delta = 50.0 * scale;
 
-            di = (di - 100) / delta;
-            dj = (dj - 100) / delta;
+            di = (di - 100.0 * scale) / delta;
+            dj = (dj - 100.0 * scale) / delta;
 
             cout << "" << di << "," << dj << "; " << delta << "\n";
 
@@ -470,31 +452,27 @@ void botao_mouse(int button, int state, int x, int y) {
     }
 }
 
-// reshape function, call with glutReshapeFunc(reshape) in yout main function
 void reshape(int width, int height) {
     float scale = min((float)glutGet(GLUT_WINDOW_WIDTH)/WIDTH, (float)glutGet(GLUT_WINDOW_HEIGHT)/HEIGHT);
 
     cout << scale << endl;
 
-    XMARGIN = (width - WIDTH * scale) / 2;
-    YMARGIN = (height - HEIGHT * scale) / 2;
+    float YMARGIN = (height - HEIGHT * scale);
 
-    glViewport(XMARGIN, YMARGIN, WIDTH * scale, HEIGHT * scale);
+    glViewport(0, YMARGIN, WIDTH * scale, HEIGHT * scale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    glLoadIdentity();
 }
 
 int main(int argc, char** argv)
 {
     cout << "Hello World!\n";
 
-    cout << WHITES.size() << BLACKS.size() << "\n";
+    //cout << "Deseja jogar contra o compoutador? (1=PC joga primeiro, -1 = PC joga dps, 0=PC não joga)" << endl;
+    //cin >> _pc;
+
     init_board();
-    cout << WHITES.size() << BLACKS.size() << "\n";
-    init_board();
-    cout << WHITES.size() << BLACKS.size() << "\n";
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
