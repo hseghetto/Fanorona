@@ -1,0 +1,17 @@
+Documentação para jogar Fanorona
+
+No console da aplicação:
+- digite 1 e aperte enter para jogar contra o computador sendo branca;
+- digite -1 e aperte enter para jogar contra o computador sendo preta;
+- digite 0 e aperte enter para não jogar contra o computador, primeiro jogador deve jogar com as brancas.
+
+Com o botão esquerdo, selecione a peça que quer jogar e depois selecione para onde a peça irá se mover.
+A peça selecionada terá um círculo em volta azul e as jogadas possíveis serão círculos amarelos.
+Caso haja um movimento em que poderia haver uma captura por aproximação e por afastamento simultaneamente, as peças terão círculos vermelhos e o jogaodr deve decidir (e apertar) qual das peças ele quer capturar.
+
+Para o computador jogar, você deve apertão o botão esquerdo.
+
+Quando não há mais peças de uma das cores, a pessoa com a outra cor vence. 
+Terá indicado no console quem ganhou.
+
+Você pode acompanhar o jogo com alguns prints no console.
